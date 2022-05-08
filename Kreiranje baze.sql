@@ -23,6 +23,33 @@ create table Slicica_Korisnik
 (id int primary key identity(1,1), korisnik_id int foreign key references Korisnik (id), slicica_id int foreign key references Slicica (id))
 
 
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create proc Register
+@username varchar(30),
+@ime nvarchar(30),
+@prezime varchar(30),
+@email varchar(30),
+@pass nvarchar(30)
+as
+set lock_timeout 3000;
+begin try	
+	if exists(select top 1 email from Korisnik
+	where email = @email)
+	return 1
+	else 
+	insert into Korisnik(username,ime,prezime,email,pass)
+	values (@username,@ime,@prezime,@email,@pass)
+		return 0;
+end try
+begin catch
+	return @@error
+end catch
+
+exec Register @username = 'bratke', @ime = 'Andrej', @prezime = 'Bratic', @email = 'andrej.bratic@gmail.com', @pass = '123'
+
 
 
 
